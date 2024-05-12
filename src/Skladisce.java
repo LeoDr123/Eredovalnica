@@ -33,10 +33,4 @@ public class Skladisce {
     public int getUporabnikId() {
         return uporabnikId;
     }
-
-    private enum TipUporabnika {
-        ADMINISTRATOR,
-        UCITELJ,
-        STARS
-    }
 }

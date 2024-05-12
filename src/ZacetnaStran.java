@@ -11,12 +11,7 @@ public class ZacetnaStran {
     private JLabel mainTitle;
 
     public ZacetnaStran() {
-        try {
-            Baza baza = Baza.getInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Napaka pri povezavi s podatkovno bazo.", "Napaka", JOptionPane.ERROR_MESSAGE);
-        }
+        Skladisce skladisce = Skladisce.getInstance();
 
         window = new JFrame("Eredovalnica"); // Ustvarimo novo okno
         window.setPreferredSize(new Dimension(1024, 768)); // Nastavimo velikost okna
@@ -32,6 +27,18 @@ public class ZacetnaStran {
         mainTitle.setFont(new Font("Arial", Font.BOLD, 48)); // Nastavimo velikost in obliko pisave
         mainTitle.setBounds(10, 50, 1004, 50); // Nastavimo pozicijo in velikost
         container.add(mainTitle); // Dodamo label v container
+
+        if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+            JButton ucitelji = new JButton("Učitelji");
+            ucitelji.setBounds(10, 150, 200, 40);
+            ucitelji.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+            container.add(ucitelji);
+        }
     }
 
     public void show() {
