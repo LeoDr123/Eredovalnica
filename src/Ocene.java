@@ -19,6 +19,8 @@ public class Ocene {
     private Baza db;
 
     public Ocene() {
+        Skladisce skladisce = Skladisce.getInstance();
+
         try {
             db = Baza.getInstance();
         } catch (Exception e) {
@@ -54,7 +56,12 @@ public class Ocene {
 
         // Dodajanje vrstic v tabelo
         try {
-            String query = "SELECT o.*, (p.ime_predmeta) AS predmet, (u.ime || ' ' || u.priimek) AS ucenec FROM \"Ocene\" o, \"Predmeti\" p, \"Uceneci\" u WHERE o.predmet_id = p.id AND o.ucenec_id = u.id;";
+            String query = "";
+            if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+                query = "SELECT o.*, (p.ime_predmeta) AS predmet, (u.ime || ' ' || u.priimek) AS ucenec FROM \"Ocene\" o, \"Predmeti\" p, \"Uceneci\" u WHERE o.predmet_id = p.id AND o.ucenec_id = u.id;";
+            } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
+                query = "SELECT o.*, (p.ime_predmeta) AS predmet, (u.ime || ' ' || u.priimek) AS ucenec FROM \"Ocene\" o, \"Predmeti\" p, \"Uceneci\" u WHERE o.predmet_id = p.id AND o.ucenec_id = u.id AND o.ucitelj_id = " + skladisce.getUporabnikId() + ";";
+            }
             ResultSet resultSet = db.executeQuery(query);
             while (resultSet.next()) {
                 model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("predmet"), resultSet.getString("ucenec"), resultSet.getInt("ocena")});
@@ -97,7 +104,12 @@ public class Ocene {
             public void actionPerformed(ActionEvent e) {
                 model.setRowCount(0);
                 try {
-                    String query = "SELECT o.*, (p.ime_predmeta) AS predmet, (u.ime || ' ' || u.priimek) AS ucenec FROM \"Ocene\" o, \"Predmeti\" p, \"Uceneci\" u WHERE o.predmet_id = p.id AND o.ucenec_id = u.id;";
+                    String query = "";
+                    if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+                        query = "SELECT o.*, (p.ime_predmeta) AS predmet, (u.ime || ' ' || u.priimek) AS ucenec FROM \"Ocene\" o, \"Predmeti\" p, \"Uceneci\" u WHERE o.predmet_id = p.id AND o.ucenec_id = u.id;";
+                    } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
+                        query = "SELECT o.*, (p.ime_predmeta) AS predmet, (u.ime || ' ' || u.priimek) AS ucenec FROM \"Ocene\" o, \"Predmeti\" p, \"Uceneci\" u WHERE o.predmet_id = p.id AND o.ucenec_id = u.id AND o.ucitelj_id = " + skladisce.getUporabnikId() + ";";
+                    }
                     ResultSet resultSet = db.executeQuery(query);
                     while (resultSet.next()) {
                         model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("predmet"), resultSet.getString("ucenec"), resultSet.getInt("ocena")});

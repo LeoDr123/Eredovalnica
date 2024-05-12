@@ -22,6 +22,8 @@ public class PredmetiForm {
     private int predmetId;
 
     public PredmetiForm(int predmetId) {
+        Skladisce skladisce = Skladisce.getInstance();
+
         this.predmetId = predmetId;
 
         window = new JFrame("Predmeti Obrazec"); // Ustvarimo novo okno
@@ -65,7 +67,12 @@ public class PredmetiForm {
 
         try {
             Baza db = Baza.getInstance();
-            String query = "SELECT * FROM \"Ucitelji\";";
+            String query = "";
+            if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+                query = "SELECT * FROM \"Ucitelji\";";
+            } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
+                query = "SELECT * FROM \"Ucitelji\" WHERE \"id\" = " + skladisce.getUporabnikId() + ";";
+            }
             ResultSet resultSet = db.executeQuery(query);
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");

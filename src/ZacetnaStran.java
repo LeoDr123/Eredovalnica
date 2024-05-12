@@ -83,6 +83,50 @@ public class ZacetnaStran {
                 }
             });
             container.add(ocene);
+        } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
+            JButton predmeti = new JButton("Predmeti");
+            predmeti.setBounds(10, 150, 200, 40);
+            predmeti.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Predmeti predmeti = new Predmeti();
+                    predmeti.show();
+                }
+            });
+            container.add(predmeti);
+
+            JButton ocene = new JButton("Ocene");
+            ocene.setBounds(10, 200, 200, 40);
+            ocene.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Ocene ocene = new Ocene();
+                    ocene.show();
+                }
+            });
+            container.add(ocene);
+        } else if (skladisce.getTipUporabnika() == TipUporabnika.STARS) {
+            JButton ucenci = new JButton("Moji otroci");
+            ucenci.setBounds(10, 150, 200, 40);
+            ucenci.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Ucenci ucenci = new Ucenci();
+                    ucenci.show();
+                }
+            });
+            container.add(ucenci);
+
+            JButton ocene = new JButton("Ocene mojih otrok");
+            ocene.setBounds(10, 200, 200, 40);
+            ocene.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Ocene ocene = new Ocene();
+                    ocene.show();
+                }
+            });
+            container.add(ocene);
         }
     }
 

@@ -19,6 +19,8 @@ public class Predmeti {
     private Baza db;
 
     public Predmeti() {
+        Skladisce skladisce = Skladisce.getInstance();
+
         try {
             db = Baza.getInstance();
         } catch (Exception e) {
@@ -54,7 +56,13 @@ public class Predmeti {
 
         // Dodajanje vrstic v tabelo
         try {
-            String query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id;";
+            String query = "";
+            if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+                query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id;";
+            } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
+                query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id AND u.id = " + skladisce.getUporabnikId() + ";";
+            }
+
             ResultSet resultSet = db.executeQuery(query);
             while (resultSet.next()) {
                 model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime_predmeta"), resultSet.getString("opis"), resultSet.getString("ucitelj")});
@@ -97,7 +105,12 @@ public class Predmeti {
             public void actionPerformed(ActionEvent e) {
                 model.setRowCount(0);
                 try {
-                    String query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id;";
+                    String query = "";
+                    if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+                        query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id;";
+                    } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
+                        query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id AND u.id = " + skladisce.getUporabnikId() + ";";
+                    }
                     ResultSet resultSet = db.executeQuery(query);
                     while (resultSet.next()) {
                         model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime_predmeta"), resultSet.getString("opis"), resultSet.getString("ucitelj")});

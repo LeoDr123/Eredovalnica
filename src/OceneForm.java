@@ -21,6 +21,7 @@ public class OceneForm {
     private int ocenaId;
 
     public OceneForm(int ocenaId) {
+        Skladisce skladisce = Skladisce.getInstance();
         this.ocenaId = ocenaId;
 
         window = new JFrame("Ocene Obrazec"); // Ustvarimo novo okno
@@ -64,7 +65,12 @@ public class OceneForm {
 
         try {
             Baza db = Baza.getInstance();
-            String query = "SELECT * FROM \"Predmeti\";";
+            String query = "";
+            if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+                query = "SELECT * FROM \"Predmeti\";";
+            } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
+                query = "SELECT * FROM \"Predmeti\" WHERE \"ucitelj_id\" = " + skladisce.getUporabnikId() + ";";
+            }
             ResultSet resultSet = db.executeQuery(query);
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
