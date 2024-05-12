@@ -11,6 +11,13 @@ public class ZacetnaStran {
     private JLabel mainTitle;
 
     public ZacetnaStran() {
+        try {
+            Baza baza = Baza.getInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Napaka pri povezavi s podatkovno bazo.", "Napaka", JOptionPane.ERROR_MESSAGE);
+        }
+
         window = new JFrame("Eredovalnica"); // Ustvarimo novo okno
         window.setPreferredSize(new Dimension(1024, 768)); // Nastavimo velikost okna
         window.setBounds(10, 10, 1024, 768); // Nastavimo pozicijo in velikost okna
