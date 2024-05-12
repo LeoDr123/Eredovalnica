@@ -34,10 +34,51 @@ public class ZacetnaStran {
             ucitelji.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    Ucitelji ucitelji = new Ucitelji();
+                    ucitelji.show();
                 }
             });
             container.add(ucitelji);
+
+            JButton predmeti = new JButton("Predmeti");
+            predmeti.setBounds(10, 200, 200, 40);
+            predmeti.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+            container.add(predmeti);
+
+            JButton starsi = new JButton("Starši");
+            starsi.setBounds(10, 250, 200, 40);
+            starsi.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+            container.add(starsi);
+
+            JButton ucenci = new JButton("Učenci");
+            ucenci.setBounds(10, 300, 200, 40);
+            ucenci.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+            container.add(ucenci);
+
+            JButton ocene = new JButton("Ocene");
+            ocene.setBounds(10, 350, 200, 40);
+            ocene.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+            container.add(ocene);
         }
     }
 
