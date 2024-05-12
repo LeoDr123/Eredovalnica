@@ -29,7 +29,7 @@ public class UciteljiForm {
         window.setPreferredSize(new Dimension(1024, 768)); // Nastavimo velikost okna
         window.setBounds(10, 10, 1024, 768); // Nastavimo pozicijo in velikost okna
         window.setLayout(null); // Nastavimo postavitev okna
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Nastavimo akcijo ob zaprtju okna
+        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Nastavimo akcijo ob zaprtju okna
         window.setLocationRelativeTo(null); // Nastavimo pozicijo okna na sredino
         window.setResizable(false); // Omogočimo spreminjanje velikosti okna
 

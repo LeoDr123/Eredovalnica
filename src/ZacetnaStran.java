@@ -45,7 +45,8 @@ public class ZacetnaStran {
             predmeti.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    Predmeti predmeti = new Predmeti();
+                    predmeti.show();
                 }
             });
             container.add(predmeti);
