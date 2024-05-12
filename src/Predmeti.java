@@ -89,89 +89,95 @@ public class Predmeti {
         // Ustvarjanje drsnega okna za tabelo
         JScrollPane scrollPane = new JScrollPane(table);
 
-        // Ustvarjanje panela z gumbi
         JPanel buttonsPanel = new JPanel();
-        JButton addButton = new JButton("Dodaj nov predmet");
-        JButton editButton = new JButton("Uredi predmet");
-        JButton deleteButton = new JButton("Izbriši predmet");
-        JButton refreshButton = new JButton("Osveži");
-        buttonsPanel.add(refreshButton);
-        buttonsPanel.add(addButton);
-        buttonsPanel.add(editButton);
-        buttonsPanel.add(deleteButton);
 
-        refreshButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                model.setRowCount(0);
-                try {
-                    String query = "";
-                    if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
-                        query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id;";
-                    } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
-                        query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id AND u.id = " + skladisce.getUporabnikId() + ";";
-                    }
-                    ResultSet resultSet = db.executeQuery(query);
-                    while (resultSet.next()) {
-                        model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime_predmeta"), resultSet.getString("opis"), resultSet.getString("ucitelj")});
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
+        if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+            // Ustvarjanje panela z gumbi
+            JButton addButton = new JButton("Dodaj nov predmet");
+            JButton editButton = new JButton("Uredi predmet");
+            JButton deleteButton = new JButton("Izbriši predmet");
+            JButton refreshButton = new JButton("Osveži");
+            buttonsPanel.add(refreshButton);
+            buttonsPanel.add(addButton);
+            buttonsPanel.add(editButton);
+            buttonsPanel.add(deleteButton);
 
-        // Poslušalci dogodkov za gumb "Dodaj nov predmet"
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Dodajanje novega predmeta
-                // Tukaj bi morali odpreti novo okno za dodajanje predmeta
-                PredmetiForm obrazec = new PredmetiForm(0);
-                obrazec.show();
-            }
-        });
-
-        // Poslušalci dogodkov za gumb "Uredi predmet"
-        editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Urejanje predmeta
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow != -1) {
-                    // Pridobitev ID-ja predmeta iz izbrane vrstice
-                    String predmetID = model.getValueAt(selectedRow, 0).toString();
-                    PredmetiForm obrazec = new PredmetiForm(Integer.parseInt(predmetID));
-                    obrazec.show();
-                } else {
-                    JOptionPane.showMessageDialog(container, "Prosimo, izberite predmet za urejanje.");
-                }
-            }
-        });
-
-        // Poslušalci dogodkov za gumb "Izbriši predmet"
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Brisanje predmeta
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow != -1) {
-                    // Odstranitev izbrane vrstice iz tabele
+            refreshButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    model.setRowCount(0);
                     try {
-                        String predmetID = model.getValueAt(selectedRow, 0).toString();
-                        String query = "SELECT izbrisi_predmet(" + predmetID + ");";
-                        db.executeQuery(query);
-                        model.removeRow(selectedRow);
+                        String query = "";
+                        if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+                            query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id;";
+                        } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
+                            query = "SELECT p.*, (u.ime || ' ' || u.priimek) AS ucitelj FROM \"Predmeti\" p, \"Ucitelji\" u WHERE p.ucitelj_id = u.id AND u.id = " + skladisce.getUporabnikId() + ";";
+                        }
+                        ResultSet resultSet = db.executeQuery(query);
+                        while (resultSet.next()) {
+                            model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime_predmeta"), resultSet.getString("opis"), resultSet.getString("ucitelj")});
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Napaka pri brisanju predmeta.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
                     }
-                } else {
-                    JOptionPane.showMessageDialog(container, "Prosimo, izberite predmet za brisanje.");
                 }
-            }
-        });
+            });
+
+            // Poslušalci dogodkov za gumb "Dodaj nov predmet"
+            addButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Dodajanje novega predmeta
+                    // Tukaj bi morali odpreti novo okno za dodajanje predmeta
+                    PredmetiForm obrazec = new PredmetiForm(0);
+                    obrazec.show();
+                }
+            });
+
+            // Poslušalci dogodkov za gumb "Uredi predmet"
+            editButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Urejanje predmeta
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow != -1) {
+                        // Pridobitev ID-ja predmeta iz izbrane vrstice
+                        String predmetID = model.getValueAt(selectedRow, 0).toString();
+                        PredmetiForm obrazec = new PredmetiForm(Integer.parseInt(predmetID));
+                        obrazec.show();
+                    } else {
+                        JOptionPane.showMessageDialog(container, "Prosimo, izberite predmet za urejanje.");
+                    }
+                }
+            });
+
+            // Poslušalci dogodkov za gumb "Izbriši predmet"
+            deleteButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Brisanje predmeta
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow != -1) {
+                        // Odstranitev izbrane vrstice iz tabele
+                        try {
+                            String predmetID = model.getValueAt(selectedRow, 0).toString();
+                            String query = "SELECT izbrisi_predmet(" + predmetID + ");";
+                            db.executeQuery(query);
+                            model.removeRow(selectedRow);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            JOptionPane.showMessageDialog(null, "Napaka pri brisanju predmeta.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(container, "Prosimo, izberite predmet za brisanje.");
+                    }
+                }
+            });
+        } else if (skladisce.getTipUporabnika() == TipUporabnika.UCITELJ) {
+            JButton refreshButton = new JButton("Osveži");
+            buttonsPanel.add(refreshButton);
+        }
 
         // Dodajanje tabele v glavni vsebnik
         container.add(scrollPane, BorderLayout.CENTER);

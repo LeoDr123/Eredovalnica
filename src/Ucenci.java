@@ -19,6 +19,8 @@ public class Ucenci {
     private Baza db;
 
     public Ucenci() {
+        Skladisce skladisce = Skladisce.getInstance();
+
         try {
             db = Baza.getInstance();
         } catch (Exception e) {
@@ -56,7 +58,12 @@ public class Ucenci {
 
         // Dodajanje vrstic v tabelo
         try {
-            String query = "SELECT u.*, (s1.ime || ' ' || s1.priimek) AS skrbnik1, (s2.ime || ' ' || s2.priimek) AS skrbnik2 FROM \"Uceneci\" u LEFT JOIN \"Starsi\" s1 ON u.stars1_id = s1.id LEFT JOIN \"Starsi\" s2 ON u.stars2_id = s2.id;";
+            String query = "";
+            if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+                query = "SELECT u.*, (s1.ime || ' ' || s1.priimek) AS skrbnik1, (s2.ime || ' ' || s2.priimek) AS skrbnik2 FROM \"Uceneci\" u LEFT JOIN \"Starsi\" s1 ON u.stars1_id = s1.id LEFT JOIN \"Starsi\" s2 ON u.stars2_id = s2.id;";
+            } else if (skladisce.getTipUporabnika() == TipUporabnika.STARS) {
+                query = "SELECT u.*, (s1.ime || ' ' || s1.priimek) AS skrbnik1, (s2.ime || ' ' || s2.priimek) AS skrbnik2 FROM \"Uceneci\" u LEFT JOIN \"Starsi\" s1 ON u.stars1_id = s1.id LEFT JOIN \"Starsi\" s2 ON u.stars2_id = s2.id WHERE u.stars1_id = " + skladisce.getUporabnikId() + " OR u.stars2_id = " + skladisce.getUporabnikId() + ";";
+            }
             ResultSet resultSet = db.executeQuery(query);
             while (resultSet.next()) {
                 model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("priimek"), resultSet.getString("razred"), resultSet.getString("skrbnik1"), resultSet.getString("skrbnik2")});
@@ -87,82 +94,105 @@ public class Ucenci {
 
         // Ustvarjanje panela z gumbi
         JPanel buttonsPanel = new JPanel();
-        JButton addButton = new JButton("Dodaj novega učenca");
-        JButton editButton = new JButton("Uredi učenca");
-        JButton deleteButton = new JButton("Izbriši učenca");
-        JButton refreshButton = new JButton("Osveži");
-        buttonsPanel.add(refreshButton);
-        buttonsPanel.add(addButton);
-        buttonsPanel.add(editButton);
-        buttonsPanel.add(deleteButton);
 
-        refreshButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                model.setRowCount(0);
-                try {
-                    String query = "SELECT u.*, (s1.ime || ' ' || s1.priimek) AS skrbnik1, (s2.ime || ' ' || s2.priimek) AS skrbnik2 FROM \"Uceneci\" u LEFT JOIN \"Starsi\" s1 ON u.stars1_id = s1.id LEFT JOIN \"Starsi\" s2 ON u.stars2_id = s2.id;";
-                    ResultSet resultSet = db.executeQuery(query);
-                    while (resultSet.next()) {
-                        model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("priimek"), resultSet.getString("razred"), resultSet.getString("skrbnik1"), resultSet.getString("skrbnik2")});
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
+        if (skladisce.getTipUporabnika() == TipUporabnika.ADMINISTRATOR) {
+            JButton addButton = new JButton("Dodaj novega učenca");
+            JButton editButton = new JButton("Uredi učenca");
+            JButton deleteButton = new JButton("Izbriši učenca");
+            JButton refreshButton = new JButton("Osveži");
+            buttonsPanel.add(refreshButton);
+            buttonsPanel.add(addButton);
+            buttonsPanel.add(editButton);
+            buttonsPanel.add(deleteButton);
 
-        // Poslušalci dogodkov za gumb "Dodaj novega ucenca"
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Dodajanje novega ucenca
-                // Tukaj bi morali odpreti novo okno za dodajanje ucenca
-                UcenciForm obrazec = new UcenciForm(0);
-                obrazec.show();
-            }
-        });
-
-        // Poslušalci dogodkov za gumb "Uredi ucenca"
-        editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Urejanje ucenca
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow != -1) {
-                    // Pridobitev ID-ja ucenca iz izbrane vrstice
-                    String ucenecID = model.getValueAt(selectedRow, 0).toString();
-                    UcenciForm obrazec = new UcenciForm(Integer.parseInt(ucenecID));
-                    obrazec.show();
-                } else {
-                    JOptionPane.showMessageDialog(container, "Prosimo, izberite učenca za urejanje.");
-                }
-            }
-        });
-
-        // Poslušalci dogodkov za gumb "Izbriši ucenca"
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Brisanje ucenca
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow != -1) {
-                    // Odstranitev izbrane vrstice iz tabele
+            refreshButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    model.setRowCount(0);
                     try {
-                        String ucenecID = model.getValueAt(selectedRow, 0).toString();
-                        String query = "SELECT izbrisi_ucenca(" + ucenecID + ");";
-                        db.executeQuery(query);
-                        model.removeRow(selectedRow);
+                        String query = "SELECT u.*, (s1.ime || ' ' || s1.priimek) AS skrbnik1, (s2.ime || ' ' || s2.priimek) AS skrbnik2 FROM \"Uceneci\" u LEFT JOIN \"Starsi\" s1 ON u.stars1_id = s1.id LEFT JOIN \"Starsi\" s2 ON u.stars2_id = s2.id;";
+                        ResultSet resultSet = db.executeQuery(query);
+                        while (resultSet.next()) {
+                            model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("priimek"), resultSet.getString("razred"), resultSet.getString("skrbnik1"), resultSet.getString("skrbnik2")});
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Napaka pri brisanju učenca.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
                     }
-                } else {
-                    JOptionPane.showMessageDialog(container, "Prosimo, izberite učenca za brisanje.");
                 }
-            }
-        });
+            });
+
+            // Poslušalci dogodkov za gumb "Dodaj novega ucenca"
+            addButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Dodajanje novega ucenca
+                    // Tukaj bi morali odpreti novo okno za dodajanje ucenca
+                    UcenciForm obrazec = new UcenciForm(0);
+                    obrazec.show();
+                }
+            });
+
+            // Poslušalci dogodkov za gumb "Uredi ucenca"
+            editButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Urejanje ucenca
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow != -1) {
+                        // Pridobitev ID-ja ucenca iz izbrane vrstice
+                        String ucenecID = model.getValueAt(selectedRow, 0).toString();
+                        UcenciForm obrazec = new UcenciForm(Integer.parseInt(ucenecID));
+                        obrazec.show();
+                    } else {
+                        JOptionPane.showMessageDialog(container, "Prosimo, izberite učenca za urejanje.");
+                    }
+                }
+            });
+
+            // Poslušalci dogodkov za gumb "Izbriši ucenca"
+            deleteButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Brisanje ucenca
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow != -1) {
+                        // Odstranitev izbrane vrstice iz tabele
+                        try {
+                            String ucenecID = model.getValueAt(selectedRow, 0).toString();
+                            String query = "SELECT izbrisi_ucenca(" + ucenecID + ");";
+                            db.executeQuery(query);
+                            model.removeRow(selectedRow);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            JOptionPane.showMessageDialog(null, "Napaka pri brisanju učenca.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(container, "Prosimo, izberite učenca za brisanje.");
+                    }
+                }
+            });
+        } else if (skladisce.getTipUporabnika() == TipUporabnika.STARS) {
+            JButton refreshButton = new JButton("Osveži");
+            buttonsPanel.add(refreshButton);
+
+            refreshButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    model.setRowCount(0);
+                    try {
+                        String query = "SELECT u.*, (s1.ime || ' ' || s1.priimek) AS skrbnik1, (s2.ime || ' ' || s2.priimek) AS skrbnik2 FROM \"Uceneci\" u LEFT JOIN \"Starsi\" s1 ON u.stars1_id = s1.id LEFT JOIN \"Starsi\" s2 ON u.stars2_id = s2.id;";
+                        ResultSet resultSet = db.executeQuery(query);
+                        while (resultSet.next()) {
+                            model.addRow(new Object[]{resultSet.getInt("id"), resultSet.getString("ime"), resultSet.getString("priimek"), resultSet.getString("razred"), resultSet.getString("skrbnik1"), resultSet.getString("skrbnik2")});
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Napaka pri pridobivanju podatkov iz baze.", "Napaka", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            });
+        }
 
         // Dodajanje tabele v glavni vsebnik
         container.add(scrollPane, BorderLayout.CENTER);
