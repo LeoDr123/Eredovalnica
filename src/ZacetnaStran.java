@@ -67,7 +67,8 @@ public class ZacetnaStran {
             ucenci.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    Ucenci ucenci = new Ucenci();
+                    ucenci.show();
                 }
             });
             container.add(ucenci);
