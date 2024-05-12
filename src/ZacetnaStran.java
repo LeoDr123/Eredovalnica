@@ -78,7 +78,8 @@ public class ZacetnaStran {
             ocene.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    Ocene ocene = new Ocene();
+                    ocene.show();
                 }
             });
             container.add(ocene);
