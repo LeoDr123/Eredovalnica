@@ -56,7 +56,8 @@ public class ZacetnaStran {
             starsi.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    Starsi starsi = new Starsi();
+                    starsi.show();
                 }
             });
             container.add(starsi);
