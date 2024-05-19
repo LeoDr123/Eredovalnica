@@ -64,24 +64,24 @@ public class Prijava {
         String password = new String(passwordField.getPassword()); // Preberemo vrednost iz textfielda
         try {
             Baza database = Baza.getInstance(); // Ustvarimo povezavo na bazo
-            ResultSet result1 = database.executeQuery("SELECT * FROM \"Admin\" WHERE email = '" + email + "' AND geslo = '" + password + "';"); // Izvedemo poizvedbo
-            ResultSet result2 = database.executeQuery("SELECT * FROM \"Starsi\" WHERE email = '" + email + "' AND geslo = '" + password + "';"); // Izvedemo poizvedbo
-            ResultSet result3 = database.executeQuery("SELECT * FROM \"Ucitelji\" WHERE email = '" + email + "' AND geslo = '" + password + "';"); // Izvedemo poizvedbo
-            if (result1.next()) { // Če je uporabnik najden
+            ResultSet result1 = database.executeQuery("SELECT * FROM \"Admin\" WHERE email = '" + email + "';"); // Izvedemo poizvedbo
+            ResultSet result2 = database.executeQuery("SELECT * FROM \"Starsi\" WHERE email = '" + email + "';"); // Izvedemo poizvedbo
+            ResultSet result3 = database.executeQuery("SELECT * FROM \"Ucitelji\" WHERE email = '" + email + "';"); // Izvedemo poizvedbo
+            if (result1.next() && PasswordUtil.checkPassword(password, result1.getString("geslo"))) { // Če je uporabnik najden
                 JOptionPane.showMessageDialog(window, "Uspešno ste se prijavili!"); // Izpišemo sporočilo
                 Skladisce.getInstance().setUporabnikId(result1.getInt("id"));
                 Skladisce.getInstance().setTipUporabnika(TipUporabnika.ADMINISTRATOR);
                 ZacetnaStran zacetnaStran = new ZacetnaStran(); // Ustvarimo novo okno
                 zacetnaStran.show(); // Pokažemo novo okno
                 window.dispose(); // Zapremo trenutno okno
-            } else if (result2.next()) { // Če je uporabnik najden
+            } else if (result2.next() && PasswordUtil.checkPassword(password, result2.getString("geslo"))) { // Če je uporabnik najden
                 JOptionPane.showMessageDialog(window, "Uspešno ste se prijavili!"); // Izpišemo sporočilo
                 Skladisce.getInstance().setUporabnikId(result2.getInt("id"));
                 Skladisce.getInstance().setTipUporabnika(TipUporabnika.STARS);
                 ZacetnaStran zacetnaStran = new ZacetnaStran(); // Ustvarimo novo okno
                 zacetnaStran.show(); // Pokažemo novo okno
                 window.dispose(); // Zapremo trenutno okno
-            } else if (result3.next()) { // Če je uporabnik najden
+            } else if (result3.next() && PasswordUtil.checkPassword(password, result3.getString("geslo"))) { // Če je uporabnik najden
                 JOptionPane.showMessageDialog(window, "Uspešno ste se prijavili!"); // Izpišemo sporočilo
                 Skladisce.getInstance().setUporabnikId(result3.getInt("id"));
                 Skladisce.getInstance().setTipUporabnika(TipUporabnika.UCITELJ);

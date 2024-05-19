@@ -18,7 +18,7 @@ public class StarsiForm {
     private JLabel emailLabel;
     private JTextField emailField;
     private JLabel gesloLabel;
-    private JTextField gesloField;
+    private JPasswordField gesloField;
     private JButton shraniButton;
     private int starsId;
 
@@ -68,7 +68,7 @@ public class StarsiForm {
         gesloLabel.setBounds(10, 300, 200, 40); // Nastavimo pozicijo in velikost
         container.add(gesloLabel); // Dodamo label v container
 
-        gesloField = new JTextField(); // Ustvarimo nov textfield
+        gesloField = new JPasswordField(); // Ustvarimo nov textfield
         gesloField.setBounds(220, 300, 200, 40); // Nastavimo pozicijo in velikost
         container.add(gesloField); // Dodamo textfield v container
 
@@ -110,9 +110,18 @@ public class StarsiForm {
             JOptionPane.showMessageDialog(null, "Vsa polja morajo biti izpolnjena.", "Napaka", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         try {
             Baza db = Baza.getInstance();
+
+            ResultSet resultSet = db.executeQuery("SELECT * FROM \"Starsi\" WHERE email = '" + email + "';");
+//            hash geslo ce se je spremenilo
+            if (resultSet.next()) {
+                if (!resultSet.getString("geslo").equals(geslo)) {
+                    geslo = PasswordUtil.hashPassword(geslo);
+                }
+            } else {
+                geslo = PasswordUtil.hashPassword(geslo);
+            }
 
             if (starsId <= 0) {
 //                CREATE OR REPLACE FUNCTION dodaj_starsa(p_ime character varying, p_priimek character varying, p_email character varying, p_geslo character varying)
